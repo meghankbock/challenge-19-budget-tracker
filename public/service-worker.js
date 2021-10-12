@@ -6,6 +6,7 @@ const DATA_CACHE_NAME = DATA_PREFIX + VERSION;
 
 const FILES_TO_CACHE = [
   "./index.html", 
+  "./index/js",
   "./css/styles.css",
   "./icons/icon-72x72.png",
   './icons/icon-96x96.png',  
