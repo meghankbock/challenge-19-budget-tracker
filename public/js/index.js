@@ -8,7 +8,6 @@ fetch("/api/transaction")
   .then((data) => {
     // save db data on global variable
     transactions = data;
-    console.log("data :: ", data);
 
     populateTotal();
     populateTable();
@@ -17,56 +16,46 @@ fetch("/api/transaction")
 
 function populateTotal() {
   // reduce transaction amounts to a single total value
-  if (transactions) {
-    let total = transactions.reduce((total, t) => {
-      return total + parseInt(t.value);
-    }, 0);
+  let total = transactions.reduce((total, t) => {
+    return total + parseInt(t.value);
+  }, 0);
 
-    let totalEl = document.querySelector("#total");
-    totalEl.textContent = total;
-  }
-  return 0;
+  let totalEl = document.querySelector("#total");
+  totalEl.textContent = total;
 }
 
 function populateTable() {
   let tbody = document.querySelector("#tbody");
   tbody.innerHTML = "";
 
-  if (transactions) {
-    transactions.forEach((transaction) => {
-      // create and populate a table row
-      let tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${transaction.name}</td>
-        <td>${transaction.value}</td>
-      `;
+  transactions.forEach((transaction) => {
+    // create and populate a table row
+    let tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${transaction.name}</td>
+      <td>${transaction.value}</td>
+    `;
 
-      tbody.appendChild(tr);
-    });
-  }
+    tbody.appendChild(tr);
+  });
 }
 
 function populateChart() {
   // copy array and reverse it
-  let labels = "";
-  let data = 0;
+  let reversed = transactions.slice().reverse();
+  let sum = 0;
 
-  if (transactions) {
-    let reversed = transactions.slice().reverse();
-    let sum = 0;
+  // create date labels for chart
+  let labels = reversed.map((t) => {
+    let date = new Date(t.date);
+    return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+  });
 
-    // create date labels for chart
-    labels = reversed.map((t) => {
-      let date = new Date(t.date);
-      return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-    });
-
-    // create incremental values for chart
-    data = reversed.map((t) => {
-      sum += parseInt(t.value);
-      return sum;
-    });
-  }
+  // create incremental values for chart
+  let data = reversed.map((t) => {
+    sum += parseInt(t.value);
+    return sum;
+  });
 
   // remove old chart if it exists
   if (myChart) {
@@ -116,12 +105,8 @@ function sendTransaction(isAdding) {
     transaction.value *= -1;
   }
 
-  if (transactions) {
-    // add to beginning of current array of data
-    transactions.unshift(transaction);
-  } else {
-    transactions.push(transaction);
-  }
+  // add to beginning of current array of data
+  transactions.unshift(transaction);
 
   // re-run logic to populate ui with new record
   populateChart();
