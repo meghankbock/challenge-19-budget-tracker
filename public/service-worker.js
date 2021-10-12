@@ -19,6 +19,7 @@ const FILES_TO_CACHE = [
 
 // Install the service worker
 self.addEventListener('install', function(evt) {
+    console.log('SW-install');
   evt.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       console.log('Your files were pre-cached successfully!');
@@ -31,6 +32,7 @@ self.addEventListener('install', function(evt) {
 
 // Activate the service worker and remove old data from the cache
 self.addEventListener('activate', function(evt) {
+    console.log('SW-activate');
   evt.waitUntil(
     caches.keys().then(keyList => {
       return Promise.all(
@@ -49,6 +51,7 @@ self.addEventListener('activate', function(evt) {
 
 // Intercept fetch requests
 self.addEventListener('fetch', function(evt) {
+    console.log('SW-fetch-api');
   if (evt.request.url.includes('/api/')) {
     evt.respondWith(
       caches
@@ -74,6 +77,7 @@ self.addEventListener('fetch', function(evt) {
     return;
   }
 
+  console.log('SW-fetch');
   evt.respondWith(
     fetch(evt.request).catch(function() {
       return caches.match(evt.request).then(function(response) {
